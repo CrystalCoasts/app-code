@@ -1,0 +1,4 @@
+measurement,value,unit
+temp,25,C
+salinity,35,%
+turbidity,5,NTU

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Display and Filter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+
+<!-- Dropdown for selecting the type of measurement -->
+<select id="measurementSelect">
+    <option value="">Select a measurement</option>
+    <option value="temp">Temperature</option>
+    <option value="salinity">Salinity</option>
+    <option value="turbidity">Turbidity</option>
+</select>
+
+<!-- Button to trigger data filtering -->
+<button onclick="filterData()">Filter Data</button>
+
+<!-- Container for displaying the data -->
+<div id="dataDisplay"></div>
+
+<script>
+// Store the parsed CSV data globally
+let globalData = [];
+
+// Function to display data in the webpage
+function displayData(data) {
+    const displayDiv = document.getElementById('dataDisplay');
+    displayDiv.innerHTML = ''; // Clear previous content
+    data.forEach(row => {
+        const rowDiv = document.createElement('div');
+        rowDiv.textContent = `Measurement: ${row.measurement}, Value: ${row.value}, Unit: ${row.unit}`;
+        displayDiv.appendChild(rowDiv);
+    });
+}
+
+// Function to filter data based on the selected measurement
+function filterData() {
+    const selectedMeasurement = document.getElementById('measurementSelect').value;
+    // If no measurement type is selected, display all data
+    if (!selectedMeasurement) {
+        displayData(globalData);
+        return;
+    }
+    const filteredData = globalData.filter(row => row.measurement === selectedMeasurement);
+    displayData(filteredData);
+}
+
+// Automatically load and parse the CSV file when the page loads
+window.addEventListener('load', function() {
+    Papa.parse('data.csv', {
+        download: true,
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+            console.log('Parse complete:', results);
+            if (results.errors.length) {
+                console.error('Errors:', results.errors);
+            } else {
+                globalData = results.data;
+                console.log('Data Loaded:', globalData);
+                // Display all data by default
+                displayData(globalData);
+            }
+        }
+    });
+});
+</script>
+
+</body>
+</html>
